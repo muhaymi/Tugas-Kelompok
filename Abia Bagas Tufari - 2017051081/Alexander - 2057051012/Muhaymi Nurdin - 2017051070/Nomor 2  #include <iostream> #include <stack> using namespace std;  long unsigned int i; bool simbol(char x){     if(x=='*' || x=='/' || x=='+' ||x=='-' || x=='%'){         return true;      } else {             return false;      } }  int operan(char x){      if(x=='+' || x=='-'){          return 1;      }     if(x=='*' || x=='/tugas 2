@@ -1,0 +1,111 @@
+//Abia Bagas Tufari - 2017051081
+//Alexander - 2057051012
+// Muhaymi Nurdin - 2017051070
+// Nomor 2
+
+#include <iostream>
+#include <stack>
+using namespace std;
+
+long unsigned int i;
+bool simbol(char x){
+    if(x=='*' || x=='/' || x=='+' ||x=='-' || x=='%'){
+        return true; 
+    } else {    
+        return false; 
+    }
+}
+
+int operan(char x){ 
+    if(x=='+' || x=='-'){ 
+        return 1; 
+    }
+    if(x=='*' || x=='/' || x=='%'){ 
+        return 2; 
+    } 
+    return 0;
+}
+
+string konversi(string y){
+    stack <char> data;
+    string postfix = "";
+    
+    for(i=0; i<y.length(); i++){
+        if(isdigit(y[i])){
+            while(i<y.length() && isdigit(y[i])){
+                postfix += y[i];
+                i++;
+            }
+            i--;
+            postfix += " ";
+        }else if(y[i] == '('){
+            data.push(y[i]);
+        }else if(y[i] == ')'){
+            while(!data.empty() && data.top() != '('){
+                postfix += data.top();
+                data.pop();
+                postfix += " ";
+            }
+            data.pop();
+        }else{
+            if(y[i] == '-'){
+                if(i==0){
+                    if(isdigit(y[i+1])){
+                        postfix += y[i];
+                        i++;
+                        while(i<y.length() && isdigit(y[i])){
+                            postfix += y[i];
+                            i++;
+                        }
+                        i--;
+                        postfix += " ";
+                    }else{
+                        postfix += "-1 ";
+                        data.push('*');
+                    }
+                }else{
+                    while(!data.empty() && operan(data.top()) >= operan(y[i]) && !simbol(y[i-1])){
+                        postfix += data.top();
+                        postfix += " ";
+                        data.pop();
+                    }
+                    if((isdigit(y[i+1]) || y[i+1]=='(') && (isdigit(y[i-1]) || y[i-1]==')')){
+                        data.push(y[i]);
+                    }else{
+                        postfix += "-1 ";
+                        data.push('*');
+                    }
+                }
+            }else{
+                while(!data.empty() && operan(data.top()) >= operan(y[i])){
+                    postfix += data.top();
+                    postfix += " ";
+                    data.pop();
+                }
+                data.push(y[i]);
+            }
+        }
+    }
+    while(!data.empty()){
+        postfix += data.top();
+        postfix += " ";
+        data.pop();
+    }
+    return postfix;
+}
+int main(){
+    string z;
+    getline(cin, z);
+    string baru_z="";
+    
+    for(i=0; i<z.length(); i++){
+        if(z[i]==' '){
+            continue;
+        }else{
+            baru_z+= z[i];    
+        }        
+    }
+    cout << "Print : " << konversi(baru_z);
+    
+    return 0;
+}
